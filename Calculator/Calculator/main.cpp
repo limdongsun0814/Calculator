@@ -1,18 +1,19 @@
 #include <Windows.h>
+#include <map>
 #include "object/NumButton.h"
 #include "object/Button.h"
 #include "object/Num.h"
 #include "object/TextBox.h"
 #include "object/OperButton.h"
+#include "object/EnterButton.h"
+#include "object/ResetButton.h"
 
 int Button::btnId = 0;
-std::wstring Button::btns[20];
-std::wstring Num::oper=L"";
-int Num::num[2] = {0,0};
-int pos[4] = { 50,50,30,20 };
-int operPos[4] = { 90,50,30,20 };
-Button* btn1;
-Button* btn2;
+char Button::btns[20];
+char Num::oper=' ';
+long Num::num[2] = {0,0};
+std::map<char, Button*> btnMap;
+float result = 0;
 int cnt = 0;
 
 
@@ -27,34 +28,124 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			return 0;
 
 		case WM_CREATE:
-			btn1 = new NumButton(L"1", pos, hwnd);
-			btn2 = new OperButton(L"+", operPos, hwnd);
+
+			btnMap['7'] = new NumButton('7', 10, 50, 30, 20, hwnd);
+			btnMap['8'] = new NumButton('8', 50, 50, 30, 20, hwnd);
+			btnMap['9'] = new NumButton('9', 90, 50, 30, 20, hwnd);
+			btnMap['4'] = new NumButton('4', 10, 80, 30, 20, hwnd);
+			btnMap['5'] = new NumButton('5', 50, 80, 30, 20, hwnd);
+			btnMap['6'] = new NumButton('6', 90, 80, 30, 20, hwnd);
+			btnMap['1'] = new NumButton('1', 10, 110, 30, 20, hwnd);
+			btnMap['2'] = new NumButton('2', 50, 110, 30, 20, hwnd);
+			btnMap['3'] = new NumButton('3', 90, 110, 30, 20, hwnd);
+			btnMap['0'] = new NumButton('0', 50, 140, 30, 20, hwnd);
+			btnMap['-'] = new OperButton('-', 130, 50, 30, 20, hwnd);
+			btnMap['+'] = new OperButton('+', 130, 80, 30, 20, hwnd);
+			btnMap['*'] = new OperButton('*', 130, 110, 30, 20, hwnd);
+			btnMap['/'] = new OperButton('/', 130, 140, 30, 20, hwnd);
+			btnMap['E'] = new EnterButton('E', 90, 140, 30, 20, hwnd);
+			btnMap['R'] = new ResetButton('R', 10, 140, 30, 20, hwnd);
 			return 0;
 
 		case WM_COMMAND:
-			switch (LOWORD(wParam))	{
-				case 1:
-					btn1->onClick(LOWORD(wParam));
+			switch (Button::btns[LOWORD(wParam)]) {
+				case '0':
+					btnMap['0']->onClick(LOWORD(wParam));
 					InvalidateRect(hwnd, NULL, TRUE);
 					return 0;
-				case 2:
-					btn2->onClick(LOWORD(wParam));
+				case '1':
+					btnMap['1']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '2':
+					btnMap['2']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '3':
+					btnMap['3']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '4':
+					btnMap['4']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '5':
+					btnMap['5']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '6':
+					btnMap['6']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '7':
+					btnMap['7']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '8':
+					btnMap['8']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+				case '9':
+					btnMap['9']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+
+				case '+':
+					btnMap['+']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+
+				case '-':
+					btnMap['-']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+
+				case '/':
+					btnMap['/']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+
+				case '*':
+					btnMap['*']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+
+				case 'R':
+					result = btnMap['R']->onClick(LOWORD(wParam));
+					InvalidateRect(hwnd, NULL, TRUE);
+					return 0;
+
+				case 'E':
+					result =btnMap['E']->onClick(LOWORD(wParam));
+					std::wstring data = std::to_wstring(result);
+					new TextBox(hwnd, data, 10, 10, 160, 35);
 					InvalidateRect(hwnd, NULL, TRUE);
 					return 0;
 			}
 			return 0;
 
 		case WM_PAINT: 
-			if (Num::oper==L"") {
-				std::wstring data = std::to_wstring(Num::num[0]);
-				new TextBox(hwnd, data, 10, 10, 300, 60);
-			}
-			else {
-				std::wstring data = std::to_wstring(Num::num[0])+ Num::oper + std::to_wstring(Num::num[1]);
-				new TextBox(hwnd, data, 10, 10, 300, 60);
-			}
 
-			return 0;
+			switch (Num::oper)
+			{
+				case ' ':{
+					std::wstring data = std::to_wstring(Num::num[0]);
+					new TextBox(hwnd, data, 10, 10, 160, 35);
+					return 0;
+				}
+				case 'E':{
+					std::wstring data = std::to_wstring(result);
+					new TextBox(hwnd, data, 10, 10, 160, 35);
+					return 0;
+				}
+				default:{
+					char val[] = { Num::oper };
+					std::wstring wstr(val, &val[1]);
+					std::wstring data = std::to_wstring(Num::num[0]) + wstr + std::to_wstring(Num::num[1]);
+					new TextBox(hwnd, data, 10, 10, 160, 35);
+					return 0;
+				}
+			}
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -66,16 +157,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR, int nCmdS
 
 
 	wc.lpfnWndProc = WindowProc;
-	wc.lpszClassName = L"Hello world";
+	wc.lpszClassName = L"Calculator";
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 
 	RegisterClass(&wc);
 
-	HWND hWnd = CreateWindow(L"Hello world", L"My First Win32 Program", WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, hInstance, nullptr);
-
+	HWND hWnd = CreateWindow(L"Calculator", L"Calculator", WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, 190, 210, nullptr, nullptr, hInstance, nullptr);
 	if (!hWnd) return -1;
 
 	ShowWindow(hWnd, nCmdShow);

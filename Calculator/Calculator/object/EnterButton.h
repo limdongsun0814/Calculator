@@ -1,26 +1,27 @@
 #include "Button.h"
 #include "Num.h"
-class OperButton : public Button {
+class EnterButton : public Button {
 public:
-	OperButton(std::wstring str, int* pos, HWND hwnd)
-		:Button( str,  pos,  hwnd) {
+	EnterButton(char chr, int x1, int y1, int x2, int y2, HWND hwnd)
+		:Button(chr, x1, y1, x2, y2,  hwnd) {
 	}
 	float onClick(int id) override {
-		std::wstring oper = Num::oper;
-		int* num = Num::num;
+		char oper = Num::oper;
+		Num::oper = 'E';
+		long* num = Num::num;
 
 		switch (oper)
 		{
-		case L"+":
-			return num[0] + num[1];
-		case L"-":
-			return num[0] - num[1];
-		case L"*":
-			return num[0] * num[1];
-		case L"/":
+		case '+':
+			return static_cast<float>(num[0] + num[1]);
+		case '-':
+			return static_cast<float>(num[0] - num[1]);
+		case '*':
+			return static_cast<float>(num[0] * num[1]);
+		case '/':
 			return num[0] / static_cast<float>(num[1]);
 		default:
-			return num[0];
+			return static_cast<float>(num[0]);
 		}
 	}
 };

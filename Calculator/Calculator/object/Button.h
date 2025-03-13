@@ -5,30 +5,26 @@
 
 class Button{
 	private:
-		std::wstring val;
+		char val[1];
 	public:
 		static int btnId;
-		static std::wstring btns[20];
-		Button(std::wstring str, int* pos, HWND hwnd) {
-			val = str;
+		static char btns[20];
+		Button(char chr, int x1, int y1, int x2, int y2, HWND hwnd) {
+			val[0] = chr;
+			std::wstring wstr(val, &val[1]);
 			btnId += 1;
-			btns[btnId] = str;
+			btns[btnId] = chr;
 			CreateWindow(
-				L"BUTTON",val.c_str(),
+				L"BUTTON", wstr.c_str(),
 				WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-				pos[0], pos[1], pos[2], pos[3],
+				x1, y1, x2, y2,
 				hwnd,
 				(HMENU)btnId,
 				(HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), 
 				nullptr
 			);
 		}
-		std::wstring getVal() {
-			return val;
-		}
-		void setVal(std::wstring str) {
-			val = str;
-		}
+
 		virtual float onClick(int id) = 0;
 };
 
