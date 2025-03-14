@@ -7,6 +7,8 @@
 #include "object/OperButton.h"
 #include "object/EnterButton.h"
 #include "object/ResetButton.h"
+#include "limits"
+
 
 int Button::btnId = 0;
 char Button::btns[20];
@@ -133,8 +135,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 					new TextBox(hwnd, data, 10, 10, 160, 35);
 					return 0;
 				}
-				case 'E':{
+				case 'E': {
 					std::wstring data = std::to_wstring(result);
+					new TextBox(hwnd, data, 10, 10, 160, 35);
+					return 0;
+				}
+				case 'e': {
+					std::wstring data = L"Input value exceeded.";
+					
 					new TextBox(hwnd, data, 10, 10, 160, 35);
 					return 0;
 				}
